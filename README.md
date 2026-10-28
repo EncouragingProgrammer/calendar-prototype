@@ -1,55 +1,40 @@
-# Community Calendar Prototype
+# Community Calendar: JavaScript playground
 
-A CSTTP (Computer Science Training Through Projects) class project at Southeast College.
+JavaScript version of the prototype. Express serves the website and API, Cheerio does the scraping, SQLite stores events.
+See the `main` branch README for the big picture and `docs/API.md` for the endpoints.
 
-The app collects local events from news sites and other public sources, holds them in a **review queue** until a person approves them, and shows approved events on a public calendar. Clicking an event shows its details and a link back to the original post.
+## Setup (once)
 
-This is a learning prototype. It does not need to be perfect.
+You need Node.js 22.13 or newer (check with `node --version`). SQLite is built into Node, so there's nothing else to install.
 
-## How the pieces fit
-
-```
- Sources (news pages, RSS, iCal)          Reviewer                 Public
-          |                                  |                        |
-          v                                  v                        v
-   [ Scraper ] --pending--> [ SQLite DB ] <--approve/reject-- [ Review page ]
-                                 |
-                                 +--approved--> [ API ] --> [ Calendar page ] --> [ Event page ] --> original link
+```bash
+npm install
 ```
 
-## Branches
+## Run it
 
-We are building the same app twice so we can compare languages.
-
-| Branch | Backend | Scraping | Database |
-|---|---|---|---|
-| `main` | Shared pieces only (frontend, sample data, schema, docs) | | |
-| `py-playground` | Python + Flask | requests + BeautifulSoup | SQLite (built in) |
-| `js-playground` | Node.js + Express | fetch + Cheerio | SQLite (`node:sqlite`, built in) |
-
-Both backends follow the same [API contract](docs/API.md), so the frontend in `public/` works with either one.
-
-Switch branches with `git switch py-playground` or `git switch js-playground`, then follow that branch's README.
-
-## Folder layout (shared)
-
-```
-public/          Frontend. Plain HTML, CSS and JavaScript plus FullCalendar.
-  index.html     The calendar
-  event.html     Event details and original link
-  review.html    Review queue (approve or reject)
-data/
-  schema.sql     Database table
-  sample_news_page.html   Fake news page so the scraper works offline
-docs/
-  API.md         The endpoints both backends must provide
-  Community Calendar Project Plan.docx
+```bash
+npm run scrape    # 1. collect events into calendar.db as "pending"
+npm start         # 2. start the website
 ```
 
-## Rules for scraping
+Open http://localhost:3000/review.html and approve a few events, then check http://localhost:3000 to see them on the calendar.
 
-1. Read a site's Terms of Use and `robots.txt` before scraping it.
-2. Prefer feeds (RSS, iCal) and official APIs over scraping HTML.
-3. Do not scrape Facebook or Instagram. Their terms forbid it and they actively block it.
-4. Scrape slowly (one request every few seconds) and identify the bot in the User-Agent.
-5. Always link back to the original source.
+Node prints an "SQLite is an experimental feature" warning. That's expected and safe to ignore for a prototype.
+
+## Where things live
+
+```
+server.js               Web server and API
+db.js                   Database helpers
+scraper/run.js          Runs all sources, filters, saves
+scraper/filters.js      Automatic spam and quality rules
+scraper/sources/        One file per website we collect from
+  sample-news.js        Working example (offline)
+  _template.js          Copy this to add a real site
+public/                 Frontend (shared with py-playground)
+```
+
+Search the code for `TODO (Sprint` to find your next tasks.
+
+Start over with a clean database any time by deleting `calendar.db`.
