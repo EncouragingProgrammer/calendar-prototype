@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Calendar</title>
+  <link rel="stylesheet" href="/style.css">
+  <!-- FullCalendar draws the month/week/list views for us -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Community Calendar</h1>
+    <nav><a href="/">Calendar</a> <a href="/review.html">Review queue</a></nav>
+  </header>
+
+  <main>
+    <section class="filters">
+      <label>Search <input id="search" type="text" placeholder="Title or location"></label>
+      <label>Category
+        <select id="category">
+          <option value="">All</option>
+          <option>Arts</option>
+          <option>Community</option>
+          <option>Family</option>
+          <option>Sports</option>
+          <option>Other</option>
+        </select>
+      </label>
+    </section>
+    <div id="calendar"></div>
+  </main>
+
+  <script src="/js/calendar.js"></script>
+</body>
+</html>

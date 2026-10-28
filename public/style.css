@@ -1,0 +1,14 @@
+:root { --accent: #1f6f8b; --bg: #f7f7f5; --card: #ffffff; --text: #222; --muted: #666; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); }
+header { background: var(--accent); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+header h1 { margin: 0; font-size: 1.4rem; }
+header a { color: white; margin-left: 16px; }
+main { max-width: 1000px; margin: 20px auto; padding: 0 16px; }
+.filters { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.card { background: var(--card); border-radius: 8px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+.meta { color: var(--muted); font-size: .9rem; }
+button { padding: 6px 14px; border: 0; border-radius: 4px; cursor: pointer; margin-right: 8px; }
+.approve { background: #2e7d32; color: white; }
+.reject { background: #c62828; color: white; }
+#calendar { background: var(--card); padding: 12px; border-radius: 8px; }

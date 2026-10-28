@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+# JavaScript
+node_modules/
+# Local database (each person builds their own by running the scraper)
+*.db
+# Editors and OS
+.vscode/
+.DS_Store
+Thumbs.db
+~$*.docx
