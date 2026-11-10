@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS events (
   category      TEXT DEFAULT 'Other',
   source_name   TEXT NOT NULL,          -- e.g. "Sample News"
   source_url    TEXT NOT NULL,          -- link back to the original post
-  status        TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','approved','rejected')),
+  status        TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','approved','rejected','archived')),
   review_notes  TEXT,
   reviewed_at   TEXT,
   scraped_at    TEXT DEFAULT CURRENT_TIMESTAMP,
