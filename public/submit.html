@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit an Event — Community Calendar</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>Community Calendar</h1>
+    <nav>
+      <a href="/">Calendar</a>
+      <a href="/review.html">Review queue</a>
+      <a href="/submit.html">Submit event</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Submit a Community Event</h2>
+    <p>Events go into the review queue before appearing on the public calendar. Only Title and Start Time are required.</p>
+
+    <form id="event-form">
+      <label>Event Title *
+        <input type="text" name="title" required placeholder="e.g., Fall Craft Fair" />
+      </label>
+
+      <label>Start Date & Time *
+        <input type="datetime-local" name="start_time" required />
+      </label>
+
+      <label>End Date & Time (Optional)
+        <input type="datetime-local" name="end_time" />
+      </label>
+
+      <label>Category
+        <select name="category">
+          <option value="Community">Community</option>
+          <option value="Arts">Arts</option>
+          <option value="Family">Family</option>
+          <option value="Sports">Sports</option>
+          <option value="Other">Other</option>
+        </select>
+      </label>
+
+      <label>Venue / Location Name
+        <input type="text" name="location" placeholder="e.g., Estevan Leisure Centre" />
+      </label>
+
+      <label>Street Address
+        <input type="text" name="address" placeholder="e.g., 701 Souris Ave" />
+      </label>
+
+      <label>Description
+        <textarea name="description" rows="4" placeholder="Event details, admission cost, or schedule..."></textarea>
+      </label>
+
+      <label>Organizer Name (Optional)
+        <input type="text" name="contact_name" />
+      </label>
+
+      <label>Contact Phone (Optional)
+        <input type="tel" name="contact_phone" placeholder="Only if needed" />
+      </label>
+
+      <label>Contact Email (Optional)
+        <input type="email" name="contact_email" />
+      </label>
+
+      <label>Photo Link (Optional)
+        <input type="url" name="photo_url" placeholder="https://..." />
+      </label>
+
+      <button type="submit">Submit Event for Review</button>
+      <p id="form-status"></p>
+    </form>
+  </main>
+
+  <script src="/js/submit.js"></script>
+</body>
+</html>

@@ -9,6 +9,13 @@ CREATE TABLE IF NOT EXISTS events (
   start_time    TEXT NOT NULL,          -- ISO 8601, e.g. 2026-11-07T10:00
   end_time      TEXT,
   location      TEXT,
+  address       TEXT,
+  contact_name  TEXT,
+  contact_phone TEXT,
+  contact_email TEXT,
+  photo_url     TEXT,
+  attachments   TEXT,
+
   category      TEXT DEFAULT 'Other',
   source_name   TEXT NOT NULL,          -- e.g. "Sample News"
   source_url    TEXT NOT NULL,          -- link back to the original post
