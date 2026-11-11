@@ -4,76 +4,128 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Submit an Event — Community Calendar</title>
+  <script src="/js/theme.js"></script>
   <link rel="stylesheet" href="/style.css" />
+  <style>
+    .submit-wrapper { max-width: 680px; margin: 2rem auto; padding: 0 1rem; }
+    .submit-card { padding: 2rem; border-radius: 10px; }
+    .field { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.25rem; }
+    .field label { font-weight: 600; font-size: 0.95rem; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 0.65rem 0.75rem; border-radius: 6px;
+      border: 1px solid var(--border, #cbd5e1); font: inherit; box-sizing: border-box;
+    }
+    .section-divider {
+      margin: 1.75rem 0 1.25rem; padding-top: 1.25rem;
+      border-top: 1px solid var(--border, #e2e8f0);
+    }
+    .btn-submit { width: 100%; padding: 0.8rem; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    @media (max-width: 600px) { .field-row { grid-template-columns: 1fr; gap: 0; } }
+  </style>
 </head>
 <body>
   <header>
     <h1>Community Calendar</h1>
     <nav>
       <a href="/">Calendar</a>
-      <a href="/review.html">Review queue</a>
       <a href="/submit.html">Submit event</a>
     </nav>
   </header>
 
-  <main>
-    <h2>Submit a Community Event</h2>
-    <p>Events go into the review queue before appearing on the public calendar. Only Title and Start Time are required.</p>
+  <main class="submit-wrapper">
+    <div class="card submit-card">
+      <h2>Post a Community Event</h2>
+      <p class="meta" style="margin-bottom: 1.5rem;">
+        Submissions go to our team for review before publishing. Only Title and Start Time are required.
+      </p>
 
-    <form id="event-form">
-      <label>Event Title *
-        <input type="text" name="title" required placeholder="e.g., Fall Craft Fair" />
-      </label>
+      <form id="event-form">
+        <div class="field">
+          <label for="title">Event Title *</label>
+          <input id="title" type="text" name="title" required placeholder="e.g., Estevan Market" />
+        </div>
 
-      <label>Start Date & Time *
-        <input type="datetime-local" name="start_time" required />
-      </label>
+        <div class="field-row">
+          <div class="field">
+            <label for="start_time">Starts *</label>
+            <input id="start_time" type="datetime-local" name="start_time" required />
+          </div>
+          <div class="field">
+            <label for="end_time">Ends (Optional)</label>
+            <input id="end_time" type="datetime-local" name="end_time" />
+          </div>
+        </div>
 
-      <label>End Date & Time (Optional)
-        <input type="datetime-local" name="end_time" />
-      </label>
+        <div class="field-row">
+          <div class="field">
+            <label for="category">Category</label>
+            <select id="category" name="category">
+              <option value="Community">Community</option>
+              <option value="Arts">Arts</option>
+              <option value="Family">Family</option>
+              <option value="Sports">Sports</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="location">Venue Name</label>
+            <input id="location" type="text" name="location" placeholder="e.g. Community Center" />
+          </div>
+        </div>
 
-      <label>Category
-        <select name="category">
-          <option value="Community">Community</option>
-          <option value="Arts">Arts</option>
-          <option value="Family">Family</option>
-          <option value="Sports">Sports</option>
-          <option value="Other">Other</option>
-        </select>
-      </label>
+        <div class="field">
+          <label for="address">Street Address (Optional)</label>
+          <input id="address" type="text" name="address" placeholder="e.g., Suite 200 - 1236 5th Street, Estevan, SK S4A 0Z6" />
 
-      <label>Venue / Location Name
-        <input type="text" name="location" placeholder="e.g., Estevan Leisure Centre" />
-      </label>
+        </div>
 
-      <label>Street Address
-        <input type="text" name="address" placeholder="e.g., 701 Souris Ave" />
-      </label>
+        <div class="field">
+          <label for="description">Event Details</label>
+          <textarea id="description" name="description" rows="4" placeholder="Share admission price, schedule, or what to bring..."></textarea>
+        </div>
 
-      <label>Description
-        <textarea name="description" rows="4" placeholder="Event details, admission cost, or schedule..."></textarea>
-      </label>
+        <div class="field">
+  <label for="photo_file">Event Poster or Photo (Optional)</label>
+  <p class="meta" style="margin: 0;">Minimum 600 × 315 px (16:9 landscape recommended). Click preview to view full size.</p>
+  <input id="photo_file" type="file" accept="image/*" />
+  <img id="photo-preview" alt="Click to view full photo" title="Click to view full size"
+       style="display:none; max-height: 200px; max-width: 100%; margin-top: 0.75rem; border-radius: 8px; cursor: zoom-in; object-fit: contain;" />
+</div>
 
-      <label>Organizer Name (Optional)
-        <input type="text" name="contact_name" />
-      </label>
+        <div class="section-divider">
+          <h3 style="margin-bottom: 0.25rem;">Organizer Contact (Optional)</h3>
+          <p class="meta" style="margin-bottom: 1rem;">Only fill in what you want displayed or shared with reviewers.</p>
 
-      <label>Contact Phone (Optional)
-        <input type="tel" name="contact_phone" placeholder="Only if needed" />
-      </label>
+          <div class="field-row">
+            <div class="field">
+              <label for="contact_name">Contact Name</label>
+              <input id="contact_name" type="text" name="contact_name" />
+            </div>
+            <div class="field">
+              <label for="contact_phone">Phone Number</label>
+              <input id="contact_phone" type="tel" name="contact_phone" placeholder="Optional" />
+            </div>
+          </div>
 
-      <label>Contact Email (Optional)
-        <input type="email" name="contact_email" />
-      </label>
+          <div class="field">
+            <label for="contact_email">Email Address</label>
+            <input id="contact_email" type="email" name="contact_email" placeholder="Optional" />
+          </div>
+        </div>
 
-      <label>Photo Link (Optional)
-        <input type="url" name="photo_url" placeholder="https://..." />
-      </label>
+        <button type="submit" class="approve btn-submit">Submit Event</button>
+        <p id="form-status" class="meta" style="margin-top: 1rem; text-align: center;"></p>
+      </form>
+    </div>
 
-      <button type="submit">Submit Event for Review</button>
-      <p id="form-status"></p>
-    </form>
+        <dialog id="photo-modal" style="padding: 1rem; border-radius: 10px; border: none; max-width: 90vw; max-height: 90vh;">
+      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
+        <button type="button" id="close-photo-modal">Close ✕</button>
+        <img id="photo-modal-img" alt="Full size event poster" style="max-width: 85vw; max-height: 80vh; object-fit: contain; border-radius: 6px;" />
+      </div>
+    </dialog>
+
   </main>
 
   <script src="/js/submit.js"></script>

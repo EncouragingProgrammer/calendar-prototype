@@ -20,24 +20,25 @@
   --cat-other: #555555;
 }
 
-/* Fall: September 21 to December 21. Warm, low glare, good contrast. */
+/* November / Autumn Harvest: Modern, inclusive, high-contrast palette */
 :root[data-season="fall"] {
-  --header-bg: #7a3e1d;      /* deep rust */
-  --header-text: #fff8ef;
-  --bg: #f6efe4;             /* warm oatmeal instead of bright white */
-  --card: #fffaf3;
-  --text: #2b2118;
-  --muted: #6b5a4a;
-  --link: #9a4a1c;
-  --today: #fbe7cc;          /* soft pumpkin highlight */
-  --event-bg: #b5561f;
+  --header-bg: #1e293b;      /* deep slate indigo */
+  --header-text: #f8fafc;    /* crisp alabaster white */
+  --bg: #f5f3ef;             /* soft warm stone */
+  --card: #ffffff;           /* clean card surface */
+  --text: #1e293b;           /* deep slate ink */
+  --muted: #64748b;          /* balanced neutral slate */
+  --link: #b45309;           /* warm harvest amber */
+  --today: #fef3c7;          /* soft golden glow for today */
+  --event-bg: #c2592a;       /* rich terracotta */
   --event-text: #ffffff;
-  --cat-arts: #7b3f61;       /* plum */
-  --cat-community: #a3471b;  /* burnt orange */
-  --cat-family: #5e6b2b;     /* olive */
-  --cat-sports: #8c2f1f;     /* cranberry */
-  --cat-other: #6b5a4a;      /* bark brown */
+  --cat-arts: #6d28d9;       /* vibrant plum violet */
+  --cat-community: #0f766e;  /* deep prairie teal */
+  --cat-family: #2e7d32;     /* evergreen sage */
+  --cat-sports: #c2592a;     /* warm terracotta */
+  --cat-other: #475569;      /* modern charcoal slate */
 }
+
 
 /* ---------- Page layout ---------- */
 * { box-sizing: border-box; }

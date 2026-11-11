@@ -3,19 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Review queue</title>
+  <title>Admin Dashboard — Community Calendar</title>
   <script src="/js/theme.js"></script>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <header>
-    <h1>Review queue</h1>
-    <nav><a href="/">Calendar</a> <a href="/review.html">Review queue</a></nav>
+    <h1>Admin Dashboard</h1>
+    <nav>
+      <a href="/">Public Calendar</a>
+      <a href="/submit.html">Submit Event</a>
+      <a href="/review.html">Admin Queue</a>
+    </nav>
   </header>
   <main>
-    <!-- TODO (Sprint 4): protect this page with a login so only reviewers can see it -->
-    <p>Scraped events wait here until a person checks them for accuracy and acceptability.</p>
+    <p>Manage incoming community events, edit live listings, and inspect archived cold storage.</p>
+
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+      <button type="button" data-filter="pending">Pending Review</button>
+      <button type="button" data-filter="approved">Live Approved</button>
+      <button type="button" data-filter="archived">Cold Storage (Archived)</button>
+      <button type="button" id="archive-past-btn" style="margin-left: auto;">Archive Past Events</button>
+    </div>
+
     <div id="queue"></div>
+
+    <dialog id="edit-dialog">
+      <form id="edit-form" method="dialog">
+        <h2>Edit Event Details</h2>
+        <input type="hidden" name="id" />
+
+        <label>Title *
+          <input type="text" name="title" required />
+        </label>
+        <label>Start Date & Time *
+          <input type="datetime-local" name="start_time" required />
+        </label>
+        <label>End Date & Time (Optional)
+          <input type="datetime-local" name="end_time" />
+        </label>
+        <label>Category
+          <select name="category">
+            <option value="Community">Community</option>
+            <option value="Arts">Arts</option>
+            <option value="Family">Family</option>
+            <option value="Sports">Sports</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+        <label>Venue / Location
+          <input type="text" name="location" />
+        </label>
+        <label>Street Address
+          <input type="text" name="address" />
+        </label>
+        <label>Description
+          <textarea name="description" rows="3"></textarea>
+        </label>
+        <label>Organizer Name (Optional)
+          <input type="text" name="contact_name" />
+        </label>
+        <label>Contact Phone (Optional)
+          <input type="tel" name="contact_phone" />
+        </label>
+        <label>Contact Email (Optional)
+          <input type="email" name="contact_email" />
+        </label>
+        <label>Photo URL (Optional)
+          <input type="url" name="photo_url" />
+        </label>
+
+        <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+          <button type="submit">Save Changes</button>
+          <button type="button" id="cancel-edit">Cancel</button>
+        </div>
+      </form>
+    </dialog>
   </main>
   <script src="/js/review.js"></script>
 </body>

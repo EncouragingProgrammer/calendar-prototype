@@ -7,7 +7,8 @@ import { db, initDb } from './db.js';
 
 initDb();
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+
 app.use(express.static('public'));
 
 app.get('/api/events', (req, res) => {

@@ -10,9 +10,21 @@
 <body>
   <header>
     <h1>Community Calendar</h1>
-    <nav><a href="/">Calendar</a> <a href="/review.html">Review queue</a></nav>
+    <nav>
+      <a href="/">Calendar</a>
+      <a href="/submit.html">Submit event</a>
+    </nav>
   </header>
   <main>
+     <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-bottom: 1rem;">
+      <a href="/?view=month" style="text-decoration: none;">
+        <button type="button" class="approve">Month View</button>
+      </a>
+      <a href="/?view=list" style="text-decoration: none;">
+        <button type="button" class="approve">List View</button>
+      </a>
+    </div>
+
     <article id="event" class="card">Loading...</article>
   </main>
   <script src="/js/event.js"></script>

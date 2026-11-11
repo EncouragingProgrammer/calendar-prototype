@@ -6,9 +6,10 @@ const categoryBox = document.getElementById('category');
 
 // On narrow screens (phones) a month grid is too cramped, so show a list instead
 const isNarrow = () => window.innerWidth < 700;
+const requestedView = new URLSearchParams(window.location.search).get('view');
 
 const calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
-  initialView: isNarrow() ? 'listMonth' : 'dayGridMonth',
+  initialView: requestedView === 'list' ? 'listMonth' : requestedView === 'month' ? 'dayGridMonth' : (isNarrow() ? 'listMonth' : 'dayGridMonth'),
   height: 'auto',          // grow to fit the events instead of using a fixed height
   headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listMonth' },
   eventDisplay: 'block',   // solid coloured boxes instead of small dots
