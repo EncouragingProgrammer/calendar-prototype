@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS events (
   contact_email TEXT,
   photo_url     TEXT,
   attachments   TEXT,
+  account_id    TEXT,
 
   category      TEXT DEFAULT 'Other',
   source_name   TEXT NOT NULL,          -- e.g. "Sample News"

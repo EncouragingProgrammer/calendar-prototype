@@ -49,24 +49,25 @@ app.post('/api/events/:id/review', (req, res) => {
 app.post('/api/events', (req, res) => {
   const {
     title, description, start_time, end_time, location, address,
-    category, contact_name, contact_phone, contact_email, photo_url
+    category, contact_name, contact_phone, contact_email, photo_url, account_id
   } = req.body ?? {};
 
   if (!title || !start_time) {
     return res.status(400).json({ error: 'title and start_time are required' });
   }
 
+  const linkedAccount = account_id || req.headers['x-account-id'] || null;
+
   const info = db.prepare(`
     INSERT INTO events (
       title, description, start_time, end_time, location, address,
-      category, contact_name, contact_phone, contact_email, photo_url,
+      category, contact_name, contact_phone, contact_email, photo_url, account_id,
       source_name, source_url, status
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'User Form', ?, 'pending')
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'User Form', ?, 'pending')
   `).run(
     title, description || null, start_time, end_time || null, location || null, address || null,
     category || 'Other', contact_name || null, contact_phone || null, contact_email || null, photo_url || null,
-    `manual-${crypto.randomUUID()}`
-
+    linkedAccount, `manual-${crypto.randomUUID()}`
   );
 
   res.status(201).json({ id: info.lastInsertRowid });
