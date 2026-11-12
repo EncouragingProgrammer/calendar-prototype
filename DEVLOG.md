@@ -26,3 +26,41 @@
   - Upgraded `public/event.html` and `public/js/event.js` with right-aligned `Month View` and `List View` navigation buttons (`?view=month` / `?view=list` support in `public/js/calendar.js`), event posters, formatted organizer contact badges, native mobile sharing (`navigator.share`), and official Facebook and X share buttons.
   - Updated `:root[data-season="fall"]` in `public/style.css` to a modern, inclusive November Autumn Harvest & Slate color palette.
   - Added an optional `account_id TEXT` column in `data/schema.sql` and `x-account-id` / body hook in `server.js` (`POST /api/events`) to support future Single Sign-On (SSO) and mobile app account linking while keeping open guest submissions active.
+
+## Session 4 — Codex implementation and three-tier refactor
+
+Work completed on November 11, 2026 (America/Regina), building on `js-playground` for the `Codex` branch.
+
+### Implementation
+
+- Completed the dashboard's edit, status-filter, rejection and archive controls. Inspection showed that Session 3's dashboard markup had controls whose JavaScript and archive endpoint still needed implementation.
+- Added reviewer sign-in, SQLite-backed sessions, protected editing and review endpoints, and public visibility rules that exclude unpublished events and internal review notes.
+- Added server-side validation, request rate limits, browser origin checks and consistent JSON errors. Publicly supplied account IDs are ignored pending a verified account system.
+- Added server-side photo decoding, resizing and JPEG file storage. Historical Base64 images remain readable and are reprocessed when their event is edited.
+- Added a transactional upgrade for older event tables, preserving event IDs and records, plus a SQLite backup command.
+- Added stable source identity tracking, proposed source updates, reviewer acceptance or dismissal, and persisted import history. Repeated imports preserve published editorial details until review.
+- Fixed Facebook and X sharing URLs, displayed event details in Saskatchewan time, and served FullCalendar locally.
+
+### Architecture
+
+- `routes/eventRoutes.js` handles HTTP parameters and responses for event and import endpoints.
+- `services/eventService.js` handles event visibility, review, archive decisions and scraper filtering. Supporting services handle field validation, image processing, ingestion and password comparison.
+- `repositories/eventRepository.js` owns event and ingestion SQL, using placeholder parameters and argument arrays. Session persistence lives in `repositories/sessionRepository.js`.
+- `server.js` initializes Express and middleware, mounts event and session routers, and handles startup and shutdown. `app.js` retains the application-factory export for existing callers.
+- `scraper/filters.js` re-exports the service filter for compatibility. The scraper runner records results through service and repository functions.
+- Restored the requested 10 MB JSON parser limit. Schema constraints were preserved during the refactor.
+- Updated setup and API documentation and added a GitHub Actions test workflow.
+
+### Verification
+
+- All nine backend tests passed, covering legacy database migration, public/private visibility, editing, approval, archiving, input validation, image storage, scraper updates, JSON errors and rate limits.
+- Payload checks accepted a 9 MB JSON request and rejected a request exceeding 10 MB with a JSON error.
+- Chrome workflow passed for submission, reviewer login, editing, approval, desktop calendar, event details and the mobile list view.
+- Scraper command checks added five sample events on the first run and zero on the second. Direct server startup passed.
+- Database backup command and whitespace checks passed. The dependency audit reported zero known vulnerabilities when checked during implementation.
+
+### Remaining work
+
+- Live local scraping sources, individual reviewer accounts, recurring-event editing, scheduled imports, notifications and deployment configuration still need implementation.
+- The current importer uses an offline sample. Reviewer access uses a shared password. Uploaded-image retention and cleanup need an operational policy.
+- GitHub Actions results will be available after publication; local checks are the verification recorded here.
