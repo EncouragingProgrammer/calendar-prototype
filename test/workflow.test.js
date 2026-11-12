@@ -21,7 +21,7 @@ legacy.close();
 const { createApp } = await import('../app.js');
 const { db, initDb } = await import('../db.js');
 const { ingestEvent } = await import('../services/ingestion.js');
-const { getEvent } = await import('../repositories/events.js');
+const { getEvent } = await import('../repositories/eventRepository.js');
 const app = createApp({ adminPassword: 'test-password-long', sessionSecret: 'test-secret-long-enough-for-session' });
 const server = app.listen(0, '127.0.0.1');
 await new Promise(resolve => server.once('listening', resolve));
@@ -58,6 +58,10 @@ test('submission, private review, editing, approval and archive work through HTT
   const published = await (await request('/api/events/' + id)).json();
   assert.equal(published.location, 'Updated arena');
   assert.equal(published.review_notes, undefined);
+  const filtered = await (await request('/api/events?category=Family&q=Updated')).json();
+  assert.deepEqual(filtered.map(row => row.id), [id]);
+  assert.deepEqual(await (await request('/api/events?category=Arts&q=Updated')).json(), []);
+  assert.deepEqual(await (await request('/api/events?q=%27%20OR%201%3D1--')).json(), []);
   assert.equal((await request('/api/events/99999/review', 'POST', { status: 'approved' }, true)).status, 404);
   response = await request('/api/events/archive-past', 'POST', {}, true);
   assert.equal((await response.json()).archived, 1);
@@ -100,4 +104,42 @@ test('cross-origin writes are denied and logout removes access', async () => {
   assert.equal(response.status, 403);
   assert.equal((await request('/api/session', 'DELETE', {}, true)).status, 200);
   assert.equal((await request('/api/events?status=pending', 'GET', undefined, true)).status, 401);
+});
+
+test('10 MB parser accepts a 9 MB request and rejects oversized or malformed JSON consistently', async () => {
+  const accepted = await request('/api/events', 'POST', { ...event, padding: 'x'.repeat(9 * 1024 * 1024) });
+  assert.equal(accepted.status, 201);
+  const oversized = await request('/api/events', 'POST', { ...event, padding: 'x'.repeat(10 * 1024 * 1024) });
+  assert.equal(oversized.status, 413);
+  assert.deepEqual(Object.keys(await oversized.json()), ['error']);
+  const malformed = await fetch(base + '/api/events', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{',
+  });
+  assert.equal(malformed.status, 400);
+  assert.deepEqual(Object.keys(await malformed.json()), ['error']);
+});
+
+test('scraper filter retains existing decisions through the service and compatibility entry point', async () => {
+  const { keepEvent } = await import('../services/eventService.js');
+  const { keepEvent: legacyFilter } = await import('../scraper/filters.js');
+  assert.equal(keepEvent, legacyFilter);
+  assert.deepEqual(keepEvent({ ...event, source_url: 'https://example.com/event' }), [true, 'ok']);
+  assert.deepEqual(keepEvent({ ...event, source_url: 'https://example.com/event', description: 'BUY CHEAP tickets' }), [false, "blocked word 'buy cheap'"]);
+  assert.deepEqual(keepEvent(event), [false, 'missing source_url']);
+});
+
+test('rate limit failures return the same JSON error shape', async () => {
+  let response;
+  for (let attempt = 0; attempt < 21; attempt++) {
+    response = await request('/api/events', 'POST', {});
+    if (response.status === 429) break;
+  }
+  assert.equal(response.status, 429);
+  assert.deepEqual(Object.keys(await response.json()), ['error']);
+  for (let attempt = 0; attempt < 11; attempt++) {
+    response = await request('/api/session', 'POST', { password: 'wrong' });
+    if (response.status === 429) break;
+  }
+  assert.equal(response.status, 429);
+  assert.deepEqual(Object.keys(await response.json()), ['error']);
 });

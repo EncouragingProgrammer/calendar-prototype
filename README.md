@@ -30,9 +30,11 @@ Generate a session secret with `node -e "console.log(require('crypto').randomByt
 
 | File | Responsibility |
 | --- | --- |
-| `server.js` | Reads configuration, starts the server, handles shutdown |
-| `app.js` | Connects HTTP requests to validation and database operations, checks reviewer sessions |
-| `repositories/events.js` | Contains event SQL and supplies event records |
+| `server.js` | Initializes Express and middleware, mounts route modules, starts and stops the server |
+| `app.js` | Compatibility export of the application factory for existing callers |
+| `routes/eventRoutes.js` | Validates HTTP parameters, calls services, and sends responses |
+| `services/eventService.js` | Applies event visibility, review, archive and scraper filtering rules |
+| `repositories/eventRepository.js` | Contains event SQL and supplies event records |
 | `services/validation.js` | Checks field types, lengths, dates, categories and email |
 | `services/images.js` | Decodes photos, resizes and re-encodes JPEG files, returns their paths |
 | `services/ingestion.js` | Recognizes repeated imports and holds source changes for review |
@@ -42,7 +44,7 @@ Generate a session secret with `node -e "console.log(require('crypto').randomByt
 | `test/` | HTTP/database regression tests and a real browser workflow |
 
 A submitted event travels from `public/js/submit.js` to `POST /api/events` in
-`app.js`. Validation checks the fields, the image service processes any photo,
+`routes/eventRoutes.js`. The event service calls validation, which checks the fields. The image service processes any photo,
 and the repository inserts a pending event. A signed-in reviewer approves it.
 Public API requests then include it in the calendar.
 
