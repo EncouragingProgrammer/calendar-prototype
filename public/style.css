@@ -110,3 +110,18 @@ button { padding: 6px 14px; border: 0; border-radius: 4px; cursor: pointer; marg
   .fc .fc-toolbar { flex-wrap: wrap; gap: 8px; }
   .fc .fc-toolbar-title { font-size: 1.25rem; }
 }
+
+[hidden] { display: none !important; }
+:focus-visible { outline: 3px solid var(--link); outline-offset: 3px; }
+button[aria-pressed="true"] { background: var(--header-bg); color: var(--header-text); }
+#edit-dialog { width: min(95vw, 650px); max-height: 90vh; overflow: auto; border: 1px solid var(--muted); border-radius: 10px; }
+#edit-form label { display: grid; gap: .35rem; margin-bottom: .8rem; }
+#edit-form input, #edit-form textarea, #edit-form select { width: 100%; padding: .6rem; font: inherit; }
+#login-form { display: flex; align-items: end; flex-wrap: wrap; gap: 1rem; }
+#login-form label { display: grid; gap: .5rem; }
+#login-form input { padding: .6rem; font: inherit; }
+#admin-status { position: relative; z-index: 1; }
+#imports { overflow-wrap: anywhere; overflow-x: auto; }
+#imports table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+#imports th, #imports td { text-align: left; vertical-align: top; padding: .5rem; border-bottom: 1px solid var(--muted); }
+#scrape-runs { white-space: pre-wrap; }

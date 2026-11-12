@@ -12,3 +12,7 @@ node_modules/
 .DS_Store
 Thumbs.db
 ~$*.docx
+uploads/
+.env
+*.db-wal
+*.db-shm

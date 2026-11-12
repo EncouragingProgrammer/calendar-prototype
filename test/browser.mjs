@@ -1,0 +1,53 @@
+import { chromium } from '@playwright/test';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+import assert from 'node:assert/strict';
+
+const directory = mkdtempSync(join(tmpdir(), 'calendar-browser-'));
+process.env.DATABASE_PATH = join(directory, 'browser.db');
+process.env.UPLOAD_DIR = join(directory, 'uploads');
+const { createApp } = await import('../app.js');
+const { db } = await import('../db.js');
+const server = createApp({ adminPassword: 'browser-test-password', sessionSecret: 'browser-test-session-secret' }).listen(0, '127.0.0.1');
+await new Promise(resolve => server.once('listening', resolve));
+const base = `http://127.0.0.1:${server.address().port}`;
+const browser = await chromium.launch({ channel: process.env.BROWSER_CHANNEL || 'chrome', headless: true });
+try {
+  const page = await browser.newPage();
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto(base + '/submit.html');
+  await page.locator('[name=title]').fill('Browser test community event');
+  await page.locator('[name=start_time]').fill(new Date().toISOString().slice(0, 10) + 'T18:00');
+  await page.locator('[name=location]').fill('Estevan');
+  await page.locator('[type=submit]').click();
+  await page.getByText('Event submitted! It is now waiting in the review queue.').waitFor();
+  await page.goto(base + '/review.html');
+  await page.locator('[name=password]').fill('browser-test-password');
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+  await page.getByRole('heading', { name: 'Browser test community event' }).waitFor();
+  await page.getByRole('button', { name: 'Edit', exact: true }).click();
+  await page.locator('#edit-form [name=title]').fill('Edited browser event');
+  await page.getByRole('button', { name: 'Save Changes' }).click();
+  await page.getByRole('heading', { name: 'Edited browser event' }).waitFor();
+  await page.getByRole('button', { name: 'Approve', exact: true }).click();
+  await page.getByText('No events in this view.').waitFor();
+  await page.getByRole('button', { name: 'Live Approved' }).click();
+  await page.getByRole('heading', { name: 'Edited browser event' }).waitFor();
+  await page.goto(base);
+  await page.locator('.fc-event-title').filter({ hasText: 'Edited browser event' }).click();
+  await page.getByRole('heading', { name: 'Edited browser event' }).waitFor();
+  assert.match(await page.getByRole('link', { name: 'Share on Facebook' }).getAttribute('href'), /sharer.php\?u=/);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(base);
+  await page.locator('.fc-list-event-title').filter({ hasText: 'Edited browser event' }).waitFor();
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  assert.deepEqual(errors, []);
+  console.log('Browser workflow passed: submit, login, edit, approve, desktop calendar, detail and mobile list.');
+} finally {
+  await browser.close();
+  await new Promise(resolve => server.close(resolve));
+  db.close();
+  rmSync(directory, { recursive: true, force: true });
+}

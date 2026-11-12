@@ -4,14 +4,27 @@
   "private": true,
   "description": "CSTTP community calendar prototype, JavaScript version",
   "type": "module",
-  "engines": { "node": ">=22.13" },
+  "engines": {
+    "node": ">=22.13"
+  },
   "scripts": {
-    "scrape": "node scraper/run.js",
-    "start": "node server.js",
-    "dev": "node --watch server.js"
+    "scrape": "node --env-file-if-exists=.env scraper/run.js",
+    "start": "node --env-file-if-exists=.env server.js",
+    "dev": "node --env-file-if-exists=.env --watch server.js",
+    "test": "node --test test/*.test.js",
+    "test:browser": "node test/browser.mjs",
+    "backup": "node --env-file-if-exists=.env scripts/backup.js"
   },
   "dependencies": {
     "cheerio": "^1.0.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.7.4",
+    "express-session": "^1.19.0",
+    "fullcalendar": "^6.1.15",
+    "helmet": "^8.3.0",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0"
   }
 }

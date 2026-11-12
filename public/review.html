@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard — Community Calendar</title>
+  <title>Admin Dashboard â€” Community Calendar</title>
   <script src="/js/theme.js"></script>
   <link rel="stylesheet" href="/style.css">
 </head>
@@ -19,18 +19,18 @@
   <main>
     <p>Manage incoming community events, edit live listings, and inspect archived cold storage.</p>
 
-    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+    <p id="admin-status" role="status" aria-live="polite"></p><form id="login-form"><label>Reviewer password <input name="password" type="password" autocomplete="current-password" required></label><button>Sign in</button></form><div id="admin-controls" hidden><button id="logout" type="button">Sign out</button><div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
       <button type="button" data-filter="pending">Pending Review</button>
       <button type="button" data-filter="approved">Live Approved</button>
-      <button type="button" data-filter="archived">Cold Storage (Archived)</button>
+      <button type="button" data-filter="rejected">Rejected</button><button type="button" data-filter="archived">Cold Storage (Archived)</button>
       <button type="button" id="archive-past-btn" style="margin-left: auto;">Archive Past Events</button>
     </div>
 
-    <div id="queue"></div>
+    <div id="queue"></div><h2>Source changes</h2><div id="imports"></div><details><summary>Import history</summary><pre id="scrape-runs"></pre></details></div>
 
     <dialog id="edit-dialog">
       <form id="edit-form" method="dialog">
-        <h2>Edit Event Details</h2>
+        <h2>Edit Event Details</h2><p id="edit-status" role="status"></p>
         <input type="hidden" name="id" />
 
         <label>Title *
@@ -70,7 +70,7 @@
           <input type="email" name="contact_email" />
         </label>
         <label>Photo URL (Optional)
-          <input type="url" name="photo_url" />
+          <input type="text" name="photo_url" />
         </label>
 
         <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">

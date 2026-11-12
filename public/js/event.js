@@ -20,15 +20,15 @@ async function load() {
   if (!res.ok) { box.textContent = 'Event not found.'; return; }
   const e = await res.json();
 
-  document.title = `${e.title} — Community Calendar`;
+  document.title = `${e.title} â€” Community Calendar`;
 
-  const startStr = new Date(e.start_time).toLocaleString();
-  const endStr = e.end_time ? ` – ${new Date(e.end_time).toLocaleString()}` : '';
-  const isExternalLink = e.source_url && !e.source_url.startsWith('manual-');
+  const startStr = new Date(e.start_time + (/Z$|[+-]\d{2}:\d{2}$/.test(e.start_time) ? '' : '-06:00')).toLocaleString('en-CA', { timeZone: 'America/Regina' });
+  const endStr = e.end_time ? ` â€“ ${new Date(e.end_time + (/Z$|[+-]\d{2}:\d{2}$/.test(e.end_time) ? '' : '-06:00')).toLocaleString('en-CA', { timeZone: 'America/Regina' })}` : '';
+  const isExternalLink = /^https?:\/\//.test(e.source_url || '');
   const formattedPhone = e.contact_phone ? formatPhone(e.contact_phone) : '';
 
   const shareUrl = encodeURIComponent(window.location.href);
-  const shareText = encodeURIComponent(`${e.title} — ${startStr}`);
+  const shareText = encodeURIComponent(`${e.title} â€” ${startStr}`);
 
   box.innerHTML = `
     ${e.photo_url ? `
@@ -37,7 +37,7 @@ async function load() {
     ` : ''}
 
     <h2>${esc(e.title)}</h2>
-    <p class="meta"><strong>When:</strong> ${esc(startStr)}${esc(endStr)}</p>
+    <p class="meta"><strong>When:</strong> ${esc(startStr)}${esc(endStr)} (Saskatchewan time)</p>
     <p class="meta"><strong>Where:</strong> ${esc(e.location || 'Location TBA')}${e.address ? ` (${esc(e.address)})` : ''}</p>
     <p class="meta"><strong>Category:</strong> ${esc(e.category || 'Other')}</p>
 
@@ -78,7 +78,7 @@ async function load() {
       ` : ''}
 
       <a style="background: #1877F2; color: #ffffff; text-decoration: none; padding: 0.5rem 0.95rem; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 0.45rem;"
-         href="https://facebook.com{shareUrl}" target="_blank" rel="noopener" aria-label="Share on Facebook">
+         href="https://www.facebook.com/sharer/sharer.php?u=${shareUrl}" target="_blank" rel="noopener" aria-label="Share on Facebook">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/>
         </svg>
@@ -86,7 +86,7 @@ async function load() {
       </a>
 
       <a style="background: #000000; color: #ffffff; text-decoration: none; padding: 0.5rem 0.95rem; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 0.45rem; border: 1px solid #333;"
-         href="https://x.com{shareUrl}&text=${shareText}" target="_blank" rel="noopener" aria-label="Post on X">
+         href="https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareText}" target="_blank" rel="noopener" aria-label="Post on X">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
         </svg>
@@ -106,7 +106,7 @@ async function load() {
       try {
         await navigator.share({
           title: e.title,
-          text: `${e.title} — ${startStr}`,
+          text: `${e.title} â€” ${startStr}`,
           url: window.location.href,
         });
       } catch {}

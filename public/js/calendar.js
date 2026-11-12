@@ -25,6 +25,7 @@ const calendar = new FullCalendar.Calendar(document.getElementById('calendar'), 
         category: categoryBox.value,
       });
       const res = await fetch('/api/events?' + params);
+      if (!res.ok) throw new Error('Could not load events');
       const events = await res.json();
       // Convert our database rows into the shape FullCalendar expects
       success(events.map(e => ({
@@ -35,6 +36,7 @@ const calendar = new FullCalendar.Calendar(document.getElementById('calendar'), 
         classNames: ['cat-' + (e.category || 'other').toLowerCase()], // colour by category (see style.css)
       })));
     } catch (err) {
+      document.getElementById('calendar-status').textContent = 'Events could not load. Check your connection and refresh.';
       failure(err);
     }
   },
@@ -55,5 +57,9 @@ window.addEventListener('resize', () => {
 });
 
 // Re-fetch events when filters change
-searchBox.addEventListener('input', () => calendar.refetchEvents());
+let searchTimer;
+searchBox.addEventListener('input', () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => calendar.refetchEvents(), 250);
+});
 categoryBox.addEventListener('change', () => calendar.refetchEvents());

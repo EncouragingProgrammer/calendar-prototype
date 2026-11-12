@@ -6,6 +6,9 @@ const photoModal = document.getElementById('photo-modal');
 const photoModalImg = document.getElementById('photo-modal-img');
 
 let uploadedPhotoData = null;
+let photoVersion = 0;
+let processingPhoto = false;
+let submitting = false;
 
 function compressImage(file, maxWidth = 1280, quality = 0.85) {
   return new Promise((resolve, reject) => {
@@ -40,25 +43,33 @@ function compressImage(file, maxWidth = 1280, quality = 0.85) {
 }
 
 fileInput.addEventListener('change', async () => {
+  const version = ++photoVersion;
+  uploadedPhotoData = null;
   const file = fileInput.files?.[0];
   if (!file) {
+    processingPhoto = false;
     uploadedPhotoData = null;
     previewImg.style.display = 'none';
     return;
   }
 
   statusEl.textContent = 'Checking dimensions & optimizing photo...';
+  processingPhoto = true;
   try {
     const result = await compressImage(file);
+    if (version !== photoVersion) return;
     uploadedPhotoData = result.dataUrl;
     previewImg.src = uploadedPhotoData;
     previewImg.style.display = 'block';
     statusEl.textContent = `Ready (${result.width}×${result.height}px) — click image to inspect full size.`;
   } catch (err) {
+    if (version !== photoVersion) return;
     uploadedPhotoData = null;
     previewImg.style.display = 'none';
     fileInput.value = '';
     statusEl.textContent = err.message;
+  } finally {
+    if (version === photoVersion) processingPhoto = false;
   }
 });
 
@@ -93,6 +104,13 @@ phoneInput.addEventListener('input', () => {
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
+  if (submitting) return;
+  if (processingPhoto) {
+    statusEl.textContent = 'Wait for the photo to finish processing.';
+    return;
+  }
+  submitting = true;
+  form.querySelector('[type="submit"]').disabled = true;
   statusEl.textContent = 'Submitting...';
 
   const data = Object.fromEntries(new FormData(form));
@@ -119,5 +137,8 @@ form.addEventListener('submit', async (e) => {
     statusEl.textContent = 'Event submitted! It is now waiting in the review queue.';
   } catch (err) {
     statusEl.textContent = `Error: ${err.message}`;
+  } finally {
+    submitting = false;
+    form.querySelector('[type="submit"]').disabled = false;
   }
 });
