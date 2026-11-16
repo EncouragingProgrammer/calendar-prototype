@@ -3,6 +3,8 @@
 Both backends (Python on `py-playground`, JavaScript on `js-playground`) must implement exactly these endpoints.
 The frontend in `public/` only talks to these, so it works with either backend.
 
+The Python backend also exposes `GET /health` for a local startup check. This endpoint is not required by the frontend contract.
+
 | Method | Path | What it does |
 |---|---|---|
 | GET | `/api/events?status=approved&category=Arts&q=craft` | List events. All query params optional. `status` defaults to `approved`. |
@@ -23,5 +25,16 @@ An event looks like this.
   "source_name": "Sample News",
   "source_url": "https://example.com/news/fall-craft-fair",
   "status": "approved"
+}
+```
+
+The review response has this shape:
+
+```json
+{
+  "ok": true,
+  "event_id": 1,
+  "status": "approved",
+  "reviewed_at": "2026-11-16T17:00:00+00:00"
 }
 ```

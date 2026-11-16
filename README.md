@@ -1,55 +1,94 @@
-# Community Calendar Prototype
+# Discover Estevan Community Calendar
 
-A CSTTP (Computer Science Training Through Projects) class project at Southeast College.
+This repository contains a portable Python backend for a community event calendar. It collects candidate events, validates them, stores them in SQLite, sends them to a human review queue, and publishes only approved events.
 
-The app collects local events from news sites and other public sources, holds them in a **review queue** until a person approves them, and shows approved events on a public calendar. Clicking an event shows its details and a link back to the original post.
+The backend is a local demonstration prototype. It is not production-ready until reviewer authentication, HTTPS, backups, monitoring, accessibility testing, and approved real sources are added.
 
-This is a learning prototype. It does not need to be perfect.
+## What is included
 
-## How the pieces fit
-
-```
- Sources (news pages, RSS, iCal)          Reviewer                 Public
-          |                                  |                        |
-          v                                  v                        v
-   [ Scraper ] --pending--> [ SQLite DB ] <--approve/reject-- [ Review page ]
-                                 |
-                                 +--approved--> [ API ] --> [ Calendar page ] --> [ Event page ] --> original link
-```
-
-## Branches
-
-We are building the same app twice so we can compare languages.
-
-| Branch | Backend | Scraping | Database |
-|---|---|---|---|
-| `main` | Shared pieces only (frontend, sample data, schema, docs) | | |
-| `py-playground` | Python + Flask | requests + BeautifulSoup | SQLite (built in) |
-| `js-playground` | Node.js + Express | fetch + Cheerio | SQLite (`node:sqlite`, built in) |
-
-Both backends follow the same [API contract](docs/API.md), so the frontend in `public/` works with either one.
-
-Switch branches with `git switch py-playground` or `git switch js-playground`, then follow that branch's README.
-
-## Folder layout (shared)
-
-```
-public/          Frontend. Plain HTML, CSS and JavaScript plus FullCalendar.
-  index.html     The calendar
-  event.html     Event details and original link
-  review.html    Review queue (approve or reject)
-data/
-  schema.sql     Database table
-  sample_news_page.html   Fake news page so the scraper works offline
-docs/
-  API.md         The endpoints both backends must provide
-  Community Calendar Project Plan.docx
+```text
+app.py                    Flask web server and API
+db.py                     Portable SQLite connection and persistence helpers
+data/schema.sql           Database schema
+data/sample_news_page.html Offline demonstration source
+scraper/run.py            Collection pipeline
+scraper/filters.py        Automatic quality checks
+scraper/sources/          Isolated source adapters
+public/                   Calendar, event, and review web pages
+tests/test_backend.py     Standard-library backend tests
+docs/API.md               Frontend/backend API contract
 ```
 
-## Rules for scraping
+## Run on Windows
 
-1. Read a site's Terms of Use and `robots.txt` before scraping it.
-2. Prefer feeds (RSS, iCal) and official APIs over scraping HTML.
-3. Do not scrape Facebook or Instagram. Their terms forbid it and they actively block it.
-4. Scrape slowly (one request every few seconds) and identify the bot in the User-Agent.
-5. Always link back to the original source.
+Open PowerShell in the repository folder:
+
+```powershell
+py -3 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python -m scraper.run
+python app.py
+```
+
+If PowerShell blocks activation, run the commands with the virtual-environment interpreter directly:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m scraper.run
+.\.venv\Scripts\python.exe app.py
+```
+
+## Run on macOS or Linux
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m scraper.run
+python app.py
+```
+
+Open these pages:
+
+- Public calendar: <http://127.0.0.1:5000/>
+- Review queue: <http://127.0.0.1:5000/review.html>
+- Health check: <http://127.0.0.1:5000/health>
+
+The server stops with `Ctrl+C`.
+
+## Run the tests
+
+```powershell
+python -m unittest discover -s tests -p "test_*.py" -v
+```
+
+The tests use a temporary SQLite database and do not modify the local `calendar.db`.
+
+## Configuration
+
+The default database is `calendar.db` in the repository. Optional environment variables are available:
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `CALENDAR_DB_PATH` | `calendar.db` | Store SQLite elsewhere |
+| `CALENDAR_HOST` | `127.0.0.1` | Choose the server host |
+| `CALENDAR_PORT` | `5000` | Choose the server port |
+| `CALENDAR_DEBUG` | `0` | Enable Flask debug mode locally |
+
+Example:
+
+```powershell
+$env:CALENDAR_PORT = "5050"
+python app.py
+```
+
+## Event workflow
+
+1. `python -m scraper.run` reads configured sources.
+2. `scraper/filters.py` rejects incomplete, blocked, malformed, or past events.
+3. Valid events are stored as `pending`.
+4. A reviewer opens `/review.html` and approves or rejects each event.
+5. The public calendar requests `status=approved` events only.
+
+Before adding a real source, check its terms of use and `robots.txt`. Prefer official RSS, iCalendar, or partner feeds, and always preserve the original source link.
